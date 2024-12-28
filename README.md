@@ -1,4 +1,4 @@
-# Discrete Event Simulation in Python
+# Discrete Event Simulation
 
 This project implements a Discrete Event Simulation in Python to model population dynamics over time. The simulation tracks male and female populations while accounting for births, deaths, immigration, emigration, and pregnancy events.
 
@@ -15,6 +15,7 @@ This project implements a Discrete Event Simulation in Python to model populatio
   - `collections`
 
 ## Setup
+
 Clone the repository and ensure Python is installed.
 
 ```bash
