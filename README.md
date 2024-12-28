@@ -3,9 +3,8 @@
 This project implements a Discrete Event Simulation in Python to model population dynamics over time. The simulation tracks male and female populations while accounting for births, deaths, immigration, emigration, and pregnancy events.
 
 ## Features
-- **Time-dependent rates**: Events (e.g., birth, death, emigration) are governed by rates that change linearly with time.
+- **Time-dependent rates**: Events (e.g., birth, death, emigration, imigration) are governed by rates that change linearly with time.
 - **Configurable time steps**: The simulation supports flexible time steps (`delta_t`) in days.
-- **Pregnancy latency**: Births due to pregnancies occur after a configurable latency period (e.g., 9 months).
 - **Event independence**: Events are calculated independently in each cycle.
 - **Population tracking**: Male and female populations are updated at each step based on event outcomes.
 
@@ -20,17 +19,16 @@ Clone the repository and ensure Python is installed.
 
 ```bash
 # Clone the repository
-git clone <repository_url>
+git clone https://github.com/Lu-k-as/PopulationModelExperiment
 
 # Navigate to the project directory
-cd <project_directory>
+cd PopulationModelExperiment
 ```
 
 ## How to Run the Simulation
 1. Create an instance of the `Simulation` class by providing the following:
    - Start date (in `YYYY-MM-DD` format)
    - Time step (`delta_t`) in days
-   - Pregnancy latency in days (e.g., 270 days for 9 months)
    - Initial male and female population sizes
 
 2. Call the `simulate` method with the total number of days to run the simulation.
@@ -43,7 +41,6 @@ from simulation import Simulation
 sim = Simulation(
     start_date="2024-01-01",
     delta_t_days=30,  # Time step: 30 days
-    pregnancy_latency_days=270,  # Pregnancy latency: 9 months
     initial_population_male=500,
     initial_population_female=500
 )
@@ -71,6 +68,5 @@ Date: 2024-03-01, Males: 510, Females: 520
 ## Configuration Options
 - `start_date`: Start date of the simulation (e.g., `"2024-01-01"`).
 - `delta_t_days`: Length of each time step in days (e.g., `30` for monthly updates).
-- `pregnancy_latency_days`: Pregnancy duration in days (e.g., `270` for 9 months).
 - `initial_population_male`: Initial number of males.
 - `initial_population_female`: Initial number of females.
