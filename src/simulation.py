@@ -15,6 +15,9 @@ class Simulation:
         # Reference date (1.1.2011)
         self.reference_date = datetime.strptime("2024-01-01", "%Y-%m-%d")
 
+
+
+        #comment
         # Define rate functions with adjusted start time
         self.birth_rate_male = lambda t: 0.01 + 0.0001 * t 
         self.birth_rate_female = lambda t: 0.02 + 0.0001 * t
