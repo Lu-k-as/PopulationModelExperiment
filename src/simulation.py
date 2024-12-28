@@ -28,6 +28,9 @@ class Simulation:
         # Schwangerschafts-Latenzzeit
         self.pregnancy_queue_female = deque()  # Pregnancy queue for females 
         self.pregnancy_queue_male = deque()  # Pregnancy queue for males 
+
+        #Schwangerschaften initialisieren
+        self.initialize_pregnancies()
     
     def calculate_event(self, rate_function, population):
         """Berechnet die Veränderung für ein Event basierend auf der Rate und der Population."""
@@ -90,6 +93,29 @@ class Simulation:
 
         new_pregnancies_male = int(self.calculate_event(self.birth_rate_male, self.population_male))
         self.pregnancy_queue_male.append((self.current_date + self.pregnancy_latency, new_pregnancies_male))
+
+    def initialize_pregnancies(self):
+        #initialise pregnancy-queues
+        for i in range(270):  # Gehe die letzten 270 Tage rückwärts durch
+            days_ago = timedelta(days=i)
+            past_date = self.start_date - days_ago
+        
+        # Schwangerschaften für Frauen initialisieren
+        pregnancies_female = int(self.calculate_event(self.birth_rate_female, self.population_female))
+        due_date_female = past_date + self.pregnancy_latency
+        
+        if due_date_female >= self.start_date:
+            self.pregnancy_queue_female.append((due_date_female, pregnancies_female))
+        
+        # Schwangerschaften für Männer initialisieren (für männliche Babys)
+        pregnancies_male = int(self.calculate_event(self.birth_rate_male, self.population_male))
+        due_date_male = past_date + self.pregnancy_latency
+        
+        if due_date_male >= self.start_date:
+            self.pregnancy_queue_male.append((due_date_male, pregnancies_male))
+
+
+
 
     def run_cycle(self):
         """Simuliert einen Zyklus."""
