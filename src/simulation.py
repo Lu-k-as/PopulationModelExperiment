@@ -26,7 +26,8 @@ class Simulation:
         self.immigration_rate_female = lambda t: 0.0021 + 0.00002 * t
 
         # Schwangerschafts-Latenzzeit
-        self.pregnancy_queue = deque()  # Warteschlange für Geburten
+        self.pregnancy_queue_female = deque()  # Pregnancy queue for females 
+        self.pregnancy_queue_male = deque()  # Pregnancy queue for males 
 
     def calculate_event(self, rate_function, population):
         """Berechnet die Veränderung für ein Event basierend auf der Rate und der Population."""
@@ -68,18 +69,25 @@ class Simulation:
         self.population_female -= change
 
     def event_pregnancy(self):
-        """Behandelt Schwangerschaften und Geburten mit Latenzzeit."""
-        # Geburten aus der Warteschlange durchführen
-        births_due = 0
-        if self.pregnancy_queue and self.pregnancy_queue[0][0] <= self.current_date:
-            _, births_due = self.pregnancy_queue.popleft()
+        """Handles pregnancies and births for both males and females with a latency period."""
+        # Process births for females
+        births_due_female = 0
+        if self.pregnancy_queue_female and self.pregnancy_queue_female[0][0] <= self.current_date:
+            _, births_due_female = self.pregnancy_queue_female.popleft()
+        self.population_female += int(births_due_female)
 
-        self.population_male += int(0.5 * births_due)
-        self.population_female += int(0.5 * births_due)
+        # Process births for males
+        births_due_male = 0
+        if self.pregnancy_queue_male and self.pregnancy_queue_male[0][0] <= self.current_date:
+            _, births_due_male = self.pregnancy_queue_male.popleft()
+        self.population_male += int(births_due_male)
 
-        # Neue Schwangerschaften einfügen
-        new_pregnancies = int(self.calculate_event(self.birth_rate_female, self.population_female))
-        self.pregnancy_queue.append((self.current_date + self.pregnancy_latency, new_pregnancies))
+        # Handle new pregnancies for females and males babies
+        new_pregnancies_female = int(self.calculate_event(self.birth_rate_female, self.population_female))
+        self.pregnancy_queue_female.append((self.current_date + self.pregnancy_latency, new_pregnancies_female))
+
+        new_pregnancies_male = int(self.calculate_event(self.birth_rate_male, self.population_male))
+        self.pregnancy_queue_male.append((self.current_date + self.pregnancy_latency, new_pregnancies_male))
 
     def run_cycle(self):
         """Simuliert einen Zyklus."""
