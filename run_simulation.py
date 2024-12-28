@@ -8,3 +8,5 @@ sim = Simulation(
 )
 
 sim.simulate(total_days=365)  # Simulation für 1 Jahr
+
+sim.plot()
