@@ -28,8 +28,8 @@ class Simulation:
         # Schwangerschafts-Latenzzeit
         self.pregnancy_queue_female = deque()  # Pregnancy queue for females 
         self.pregnancy_queue_male = deque()  # Pregnancy queue for males 
-
-        #Schwangerschaften initialisieren
+        
+        # Schwangerschaften initialisieren
         self.initialize_pregnancies()
     
     def calculate_event(self, rate_function, population):
