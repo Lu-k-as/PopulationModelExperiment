@@ -111,19 +111,19 @@ class Simulation:
             days_ago = timedelta(days=i)
             past_date = self.start_date - days_ago
         
-        # Schwangerschaften für Frauen initialisieren
-        pregnancies_female = int(self.calculate_event(self.birth_rate_female, self.population_female))
-        due_date_female = past_date + self.pregnancy_latency
+            # Schwangerschaften für Frauen initialisieren
+            pregnancies_female = int(self.calculate_event(self.birth_rate_female, self.population_female))
+            due_date_female = past_date + self.pregnancy_latency
         
-        if due_date_female >= self.start_date:
-            self.pregnancy_queue_female.append((due_date_female, pregnancies_female))
+            if due_date_female >= self.start_date:
+                self.pregnancy_queue_female.append((due_date_female, pregnancies_female))
+                print(f"Initialized female pregnancy due on {due_date_female} with {pregnancies_female} births")
+            # Schwangerschaften für Männer initialisieren (für männliche Babys)
+            pregnancies_male = int(self.calculate_event(self.birth_rate_male, self.population_male))
+            due_date_male = past_date + self.pregnancy_latency
         
-        # Schwangerschaften für Männer initialisieren (für männliche Babys)
-        pregnancies_male = int(self.calculate_event(self.birth_rate_male, self.population_male))
-        due_date_male = past_date + self.pregnancy_latency
-        
-        if due_date_male >= self.start_date:
-            self.pregnancy_queue_male.append((due_date_male, pregnancies_male))
+            if due_date_male >= self.start_date:
+                self.pregnancy_queue_male.append((due_date_male, pregnancies_male))
 
 
 
