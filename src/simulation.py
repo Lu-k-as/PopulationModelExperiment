@@ -19,29 +19,25 @@ class Simulation:
         self.total_population = []  # To store total population for plotting
         self.male_population = []  # To store male population for plotting
         self.female_population = []  # To store female population for plotting
+        self.birth_female = []
+        self.birth_male = []
 
         # Reference date (1.1.2011)
-        self.reference_date = datetime.strptime("2024-01-01", "%Y-%m-%d")
-
-
-
+        self.reference_date = datetime.strptime("2023-01-01", "%Y-%m-%d")
         
         # Define rate functions with adjusted start time
         self.birth_rate_male = lambda t: 0.01 + 0.0001 * t 
         self.birth_rate_female = lambda t: 0.02 + 0.0001 * t
-        self.death_rate_male = lambda t: 0.001 + 0.00005 * t
-        self.death_rate_female = lambda t: 0.001 + 0.00004 * t
-        self.emigration_rate_male = lambda t: 0.001 + 0.00001 * t
-        self.emigration_rate_female = lambda t: 0.0012 + 0.00001 * t
-        self.immigration_rate_male = lambda t: 0.0020 + 0.00002 * t
-        self.immigration_rate_female = lambda t: 0.0021 + 0.00002 * t
+        self.death_rate_male = lambda t:0# 0.001 + 0.00005 * t
+        self.death_rate_female = lambda t:0# 0.001 + 0.00004 * t
+        self.emigration_rate_male = lambda t:0# 0.001 + 0.00001 * t
+        self.emigration_rate_female = lambda t:0# 0.0012 + 0.00001 * t
+        self.immigration_rate_male = lambda t:0# 0.0020 + 0.00002 * t
+        self.immigration_rate_female = lambda t:0# 0.0021 + 0.00002 * t
 
         # Schwangerschafts-Latenzzeit
         self.pregnancy_queue_female = deque()  # Pregnancy queue for females 
         self.pregnancy_queue_male = deque()  # Pregnancy queue for males 
-        
-        # Schwangerschaften initialisieren
-        self.initialize_pregnancies()
     
     def calculate_event(self, rate_function, population):
         """Berechnet die Veränderung für ein Event basierend auf der Rate und der Population."""
@@ -85,8 +81,6 @@ class Simulation:
     def event_pregnancy(self):
         """Handles pregnancies and births for both males and females with a latency period."""
         # Process births for females
-
-        # Prevalues pregnancies!!!!
         births_due_female = 0
         if self.pregnancy_queue_female and self.pregnancy_queue_female[0][0] <= self.current_date:
             _, births_due_female = self.pregnancy_queue_female.popleft()
@@ -105,28 +99,21 @@ class Simulation:
         new_pregnancies_male = int(self.calculate_event(self.birth_rate_male, self.population_male))
         self.pregnancy_queue_male.append((self.current_date + self.pregnancy_latency, new_pregnancies_male))
 
+        self.birth_male.append(new_pregnancies_male)
+        self.birth_female.append(new_pregnancies_female)
+
+        print(f"Initialized female pregnancy due on {self.current_date} with {new_pregnancies_female} births, Population {self.population_female}")
+
     def initialize_pregnancies(self):
-        #initialise pregnancy-queues
-        for i in range(270):  # Gehe die letzten 270 Tage rückwärts durch
-            days_ago = timedelta(days=i)
-            past_date = self.start_date - days_ago
-        
-            # Schwangerschaften für Frauen initialisieren
+        self.mdate = self.current_date
+        self.current_date -= self.pregnancy_latency
+        while(self.current_date <= self.mdate):
             pregnancies_female = int(self.calculate_event(self.birth_rate_female, self.population_female))
-            due_date_female = past_date + self.pregnancy_latency
-        
-            if due_date_female >= self.start_date:
-                self.pregnancy_queue_female.append((due_date_female, pregnancies_female))
-                print(f"Initialized female pregnancy due on {due_date_female} with {pregnancies_female} births")
-            # Schwangerschaften für Männer initialisieren (für männliche Babys)
+            self.pregnancy_queue_female.append((self.current_date, pregnancies_female))
+            print(f"Initialized female pregnancy due on {self.current_date} with {pregnancies_female} births, Population {self.population_female}")
             pregnancies_male = int(self.calculate_event(self.birth_rate_male, self.population_male))
-            due_date_male = past_date + self.pregnancy_latency
-        
-            if due_date_male >= self.start_date:
-                self.pregnancy_queue_male.append((due_date_male, pregnancies_male))
-
-
-
+            self.pregnancy_queue_male.append((self.current_date, pregnancies_male))
+            self.current_date += timedelta(days=1)
 
     def run_cycle(self):
         """Simuliert einen Zyklus."""
@@ -141,27 +128,25 @@ class Simulation:
         # Zeit und Schritte aktualisieren
         self.current_date += self.delta_t
 
-        
-
     def simulate(self, total_days):
         """Führt die Simulation über eine bestimmte Zeitspanne aus."""
         end_date = self.current_date + timedelta(days=total_days)
+        self.initialize_pregnancies()
         while self.current_date < end_date:
             self.run_cycle()
             self.dates.append(self.current_date)
             self.total_population.append(self.population_male + self.population_female)
             self.male_population.append(self.population_male)
             self.female_population.append(self.population_female)
-            print(f"Date: {self.current_date.date()}, Males: {self.population_male}, Females: {self.population_female}")
+            #print(f"Date: {self.current_date.date()}, Males: {self.population_male}, Females: {self.population_female}")
 
-    def plot(self):
-        
-
+    def plot(self):        
         plt.figure(figsize=(10, 6))
         plt.plot(self.dates, self.total_population, label="Total Population", marker="o")
         plt.plot(self.dates, self.male_population, label="Male Population", marker="o")
         plt.plot(self.dates, self.female_population, label="Female Population", marker="o")
-
+        plt.plot(self.dates, self.birth_female, label="Birth  Female", marker="o")
+        plt.plot(self.dates, self.birth_male, label="Birth Male", marker="o")
         # Add labels, title, and legend
 
         plt.title("Population Growth Over Time", fontsize=16)
