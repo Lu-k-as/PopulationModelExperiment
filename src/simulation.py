@@ -84,13 +84,15 @@ class Simulation:
         births_due_female = 0
         if self.pregnancy_queue_female and self.pregnancy_queue_female[0][0] <= self.current_date:
             _, births_due_female = self.pregnancy_queue_female.popleft()
-        self.population_female += int(births_due_female)
+        if self.population_female > 0:
+            self.population_female += int(births_due_female)
 
         # Process births for males
         births_due_male = 0
         if self.pregnancy_queue_male and self.pregnancy_queue_male[0][0] <= self.current_date:
             _, births_due_male = self.pregnancy_queue_male.popleft()
-        self.population_male += int(births_due_male)
+        if self.population_female > 0:
+            self.population_male += int(births_due_male)
 
         # Handle new pregnancies for females and males babies
         new_pregnancies_female = int(self.calculate_event(self.birth_rate_female, self.population_female))
@@ -129,7 +131,7 @@ class Simulation:
             self.event_death_male()
         if self.population_female > 0:
             self.event_death_female()
-            self.event_pregnancy()
+        self.event_pregnancy()
 
         # Zeit und Schritte aktualisieren
         self.current_date += self.delta_t
