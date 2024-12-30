@@ -121,9 +121,15 @@ class Simulation:
         self.event_emigration_female()
         self.event_immigration_male()
         self.event_immigration_female()
-        self.event_death_male()
-        self.event_death_female()
-        self.event_pregnancy()
+        if self.population_male < 0:
+            self.population_male = 0
+        if self.population_female < 0:
+            self.population_female = 0    
+        if self.population_male > 0:
+            self.event_death_male()
+        if self.population_female > 0:
+            self.event_death_female()
+            self.event_pregnancy()
 
         # Zeit und Schritte aktualisieren
         self.current_date += self.delta_t
