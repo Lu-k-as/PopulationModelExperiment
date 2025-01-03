@@ -21,6 +21,8 @@ class Simulation:
         self.female_population = []  # To store female population for plotting
         self.birth_female = []
         self.birth_male = []
+        self.death_female =[]
+        self.death_male=[]
 
         # Reference date (1.1.2011)
         self.reference_date = datetime.strptime("2023-01-01", "%Y-%m-%d")
@@ -73,10 +75,12 @@ class Simulation:
     def event_death_male(self):
         change_population_male = self.calculate_event(self.death_rate_male, self.population_male)
         self.population_male -= change_population_male
+        self.death_male.append(change_population_male)
 
     def event_death_female(self):
         change_population_female = self.calculate_event(self.death_rate_female, self.population_female)
         self.population_female -= change_population_female
+        self.death_female.append(change_population_female)
 
     def event_pregnancy(self):
         """Handles pregnancies and births for both males and females with a latency period."""
@@ -155,6 +159,8 @@ class Simulation:
         plt.plot(self.dates, self.female_population, label="Female Population", marker="o")
         plt.plot(self.dates, self.birth_female, label="Birth  Female", marker="o")
         plt.plot(self.dates, self.birth_male, label="Birth Male", marker="o")
+        plt.plot(self.dates, self.death_female, label="Death  Female", marker="o")
+        plt.plot(self.dates, self.death_male, label="Death Male", marker="o")
         # Add labels, title, and legend
 
         plt.title("Population Growth Over Time", fontsize=16)
