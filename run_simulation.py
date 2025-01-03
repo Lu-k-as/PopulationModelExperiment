@@ -7,6 +7,6 @@ sim = Simulation(
     initial_population_female=500
 )
 
-sim.simulate(total_days=365)  # Simulation für 1 Jahr
+sim.simulate(total_days=700)  # Simulation für 1 Jahr
 
 sim.plot()
