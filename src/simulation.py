@@ -15,27 +15,27 @@ class Simulation:
         self.pregnancy_latency = timedelta(days=270)  # Hardcoded latency for pregnancy (e.g., 9 months)
         self.population_male = initial_population_male
         self.population_female = initial_population_female
-        self.dates = []  # To store dates for plotting
-        self.total_population = []  # To store total population for plotting
-        self.male_population = []  # To store male population for plotting
-        self.female_population = []  # To store female population for plotting
+        self.dates = []
+        self.total_population = []
+        self.male_population = []
+        self.female_population = []
         self.birth_female = []
         self.birth_male = []
         self.death_female =[]
         self.death_male=[]
 
         # Reference date (1.1.2011)
-        self.reference_date = datetime.strptime("2023-01-01", "%Y-%m-%d")
+        self.reference_date = datetime.strptime("2024-01-01", "%Y-%m-%d")
         
         # Define rate functions with adjusted start time
-        self.birth_rate_male = lambda t: 0.01 + 0.0001 * t 
-        self.birth_rate_female = lambda t: 0.02 + 0.0001 * t
-        self.death_rate_male = lambda t:0# 0.001 + 0.00005 * t
-        self.death_rate_female = lambda t:0# 0.001 + 0.00004 * t
-        self.emigration_rate_male = lambda t:0# 0.001 + 0.00001 * t
-        self.emigration_rate_female = lambda t:0# 0.0012 + 0.00001 * t
-        self.immigration_rate_male = lambda t:0# 0.0020 + 0.00002 * t
-        self.immigration_rate_female = lambda t:0# 0.0021 + 0.00002 * t
+        self.birth_rate_male = lambda t: 45905/365 + (366.1090909/365/365) * t 
+        self.birth_rate_female = lambda t: 43814/365 + (417.4/365/365) * t
+        self.death_rate_male = lambda t: 46478/365 + (811.2545455/365/365) * t
+        self.death_rate_female = lambda t: 46840/365 + (506.51818181/365/365) * t
+        self.emigration_rate_male = lambda t: 46545/365 + (627.3/365/365) * t
+        self.emigration_rate_female = lambda t: 45849/365 + (377.1363636/365/365) * t
+        self.immigration_rate_male = lambda t: 88009/365 - (46.52727273/365/365) * t
+        self.immigration_rate_female = lambda t: 68297/365 + (2.418181818/365/365) * t
 
         # Schwangerschafts-Latenzzeit
         self.pregnancy_queue_female = deque()  # Pregnancy queue for females 
@@ -45,8 +45,7 @@ class Simulation:
         """Berechnet die Veränderung für ein Event basierend auf der Rate und der Population."""
         days_since_reference = (self.current_date - self.reference_date).days
         rate = rate_function(days_since_reference)
-        change = int(rate * population)
-        return change
+        return int(rate)
 
     def event_emigration_male(self):
         change_population_male = self.calculate_event(self.emigration_rate_male, self.population_male)
@@ -108,15 +107,12 @@ class Simulation:
         self.birth_male.append(new_pregnancies_male)
         self.birth_female.append(new_pregnancies_female)
 
-        print(f"Initialized female pregnancy due on {self.current_date} with {new_pregnancies_female} births, Population {self.population_female}")
-
     def initialize_pregnancies(self):
         self.mdate = self.current_date
         self.current_date -= self.pregnancy_latency
         while(self.current_date <= self.mdate):
             pregnancies_female = int(self.calculate_event(self.birth_rate_female, self.population_female))
             self.pregnancy_queue_female.append((self.current_date, pregnancies_female))
-            print(f"Initialized female pregnancy due on {self.current_date} with {pregnancies_female} births, Population {self.population_female}")
             pregnancies_male = int(self.calculate_event(self.birth_rate_male, self.population_male))
             self.pregnancy_queue_male.append((self.current_date, pregnancies_male))
             self.current_date += timedelta(days=1)
@@ -139,6 +135,7 @@ class Simulation:
 
         # Zeit und Schritte aktualisieren
         self.current_date += self.delta_t
+        print(f"Population total: {self.population_male + self.population_female} on {self.current_date}")
 
     def simulate(self, total_days):
         """Führt die Simulation über eine bestimmte Zeitspanne aus."""
@@ -150,19 +147,18 @@ class Simulation:
             self.total_population.append(self.population_male + self.population_female)
             self.male_population.append(self.population_male)
             self.female_population.append(self.population_female)
-            #print(f"Date: {self.current_date.date()}, Males: {self.population_male}, Females: {self.population_female}")
 
     def plot(self):        
         plt.figure(figsize=(10, 6))
         plt.plot(self.dates, self.total_population, label="Total Population", marker="o")
-        plt.plot(self.dates, self.male_population, label="Male Population", marker="o")
-        plt.plot(self.dates, self.female_population, label="Female Population", marker="o")
-        plt.plot(self.dates, self.birth_female, label="Birth  Female", marker="o")
-        plt.plot(self.dates, self.birth_male, label="Birth Male", marker="o")
-        plt.plot(self.dates, self.death_female, label="Death  Female", marker="o")
-        plt.plot(self.dates, self.death_male, label="Death Male", marker="o")
+        #plt.plot(self.dates, self.male_population, label="Male Population", marker="o")
+        #plt.plot(self.dates, self.female_population, label="Female Population", marker="o")
+        #plt.plot(self.dates, self.birth_female, label="Birth  Female", marker="o")
+        #plt.plot(self.dates, self.birth_male, label="Birth Male", marker="o")
+        #plt.plot(self.dates, self.death_female, label="Death  Female", marker="o")
+        #plt.plot(self.dates, self.death_male, label="Death Male", marker="o")
+        
         # Add labels, title, and legend
-
         plt.title("Population Growth Over Time", fontsize=16)
         plt.xlabel("days", fontsize=12)
         plt.ylabel("Population ", fontsize=12)
