@@ -2,12 +2,13 @@ from datetime import datetime, timedelta
 from collections import deque
 
 import matplotlib.pyplot as plt #for the plot
+plt.style.use('default') #for the plot
 import numpy as np #for the plot
 import pandas as pd #for the plot
 
 # Simulation Class
 class Simulation:
-    def __init__(self, start_date, delta_t_days, initial_population_male, initial_population_female):
+    def __init__(self, start_date, delta_t_days, initial_population_male, initial_population_female,scaling_factor):
         # Initial settings
         self.start_date = datetime.strptime(start_date, "%Y-%m-%d")
         self.delta_t = timedelta(days=delta_t_days)
@@ -27,15 +28,18 @@ class Simulation:
         # Reference date (1.1.2011)
         self.reference_date = datetime.strptime("2024-01-01", "%Y-%m-%d")
         
+      
+    
+    
         # Define rate functions with adjusted start time
-        self.birth_rate_male = lambda t: 45905/365 + (366.1090909/365/365) * t 
-        self.birth_rate_female = lambda t: 43814/365 + (417.4/365/365) * t
-        self.death_rate_male = lambda t: 46478/365 + (811.2545455/365/365) * t
-        self.death_rate_female = lambda t: 46840/365 + (506.51818181/365/365) * t
-        self.emigration_rate_male = lambda t: 46545/365 + (627.3/365/365) * t
-        self.emigration_rate_female = lambda t: 45849/365 + (377.1363636/365/365) * t
-        self.immigration_rate_male = lambda t: 88009/365 - (46.52727273/365/365) * t
-        self.immigration_rate_female = lambda t: 68297/365 + (2.418181818/365/365) * t
+        self.birth_rate_male = lambda t: (45905/365 + (366.1090909/365/365) * t ) * scaling_factor
+        self.birth_rate_female = lambda t: (43814/365 + (417.4/365/365) * t ) * scaling_factor
+        self.death_rate_male = lambda t: (46478/365 + (811.2545455/365/365) * t ) * scaling_factor
+        self.death_rate_female = lambda t: (46840/365 + (506.51818181/365/365) * t ) * scaling_factor
+        self.emigration_rate_male = lambda t: (46545/365 + (627.3/365/365) * t) * scaling_factor
+        self.emigration_rate_female = lambda t: (45849/365 + (377.1363636/365/365) * t) * scaling_factor
+        self.immigration_rate_male = lambda t: (88009/365 - (46.52727273/365/365) * t) * scaling_factor
+        self.immigration_rate_female = lambda t: (68297/365 + (2.418181818/365/365) * t) * scaling_factor
 
         # Schwangerschafts-Latenzzeit
         self.pregnancy_queue_female = deque()  # Pregnancy queue for females 
@@ -147,8 +151,9 @@ class Simulation:
             self.female_population.append(self.population_female)
 
     def plot(self):        
+        
         plt.figure(figsize=(10, 6))
-        plt.plot(self.dates, self.total_population, label="Total Population", marker="o")
+        plt.plot(self.dates, self.total_population, label="Total Population", marker="o",linewidth=0.5)
         #plt.plot(self.dates, self.male_population, label="Male Population", marker="o")
         #plt.plot(self.dates, self.female_population, label="Female Population", marker="o")
         #plt.plot(self.dates, self.birth_female, label="Birth  Female", marker="o")
